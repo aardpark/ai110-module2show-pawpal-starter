@@ -7,6 +7,16 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+So the uml design is for a standard CRUD scheduler. We're starting bottom up, ownership of the task is the pet. pet is the owner. then owner is the scheduler. This allows for a natural hierarchy where each parent can have multiple children all the way down. 
+
+Scheduler - assigned responsibilities having to do with timing, conflicts, scheduling. 
+
+Owner - assigned responsibilities regarding pet ownership.
+
+pets - assigned responsibilities regarding tasks and identity of the pet. 
+
+tasks - assigned responsibilities regarding task information, priority, frequency, etc.
+
 **b. Design changes**
 
 - Did your design change during implementation?
