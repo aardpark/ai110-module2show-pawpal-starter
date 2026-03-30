@@ -32,6 +32,25 @@ PawPal+ goes beyond basic task lists with built-in scheduling intelligence:
 - **Conflict detection** — warns when two tasks for the same pet overlap at the same time
 - **Recurring tasks** — completing a daily or weekly task auto-generates the next occurrence
 
+## Testing PawPal+
+
+Run the test suite:
+
+```bash
+python -m pytest -v
+```
+
+We wrote **13 tests** covering core system behavior:
+
+- **Task basics** — marking complete, adding tasks to pets
+- **Sorting** — chronological ordering and priority-based ordering
+- **Recurrence** — daily tasks generate tomorrow's copy, weekly tasks generate next week's, one-time tasks don't recur
+- **Conflict detection** — flags same-pet same-time clashes, no false positives for different times
+- **Filtering** — by pet name, by completion status
+- **Edge cases** — empty pet (no tasks), completed tasks excluded from daily schedule
+
+**Confidence Level:** 4 / 5
+
 ## Getting started
 
 ### Setup

@@ -25,10 +25,15 @@ class Pet:
     species: str
     tasks: list = field(default_factory=list)
 
-    def add_task(self, task: Task):
-        """Add a task to this pet's task list."""
+    def add_task(self, task: Task) -> str | None:
+        """Add a task to this pet's task list. Returns conflict message if time is taken."""
+        for existing in self.tasks:
+            if existing.time == task.time and existing.date == task.date and not existing.completed:
+                return (f"Conflict: '{existing.description}' already scheduled "
+                        f"at {task.time} on {task.date}")
         task.pet_name = self.name
         self.tasks.append(task)
+        return None
 
     def get_tasks(self) -> list:
         """Return all tasks for this pet."""
@@ -43,6 +48,14 @@ class Owner:
     def add_pet(self, pet: Pet):
         """Add a pet to this owner."""
         self.pets.append(pet)
+
+    def remove_pet(self, name: str) -> bool:
+        """Remove a pet by name. Returns True if found and removed."""
+        pet = self.get_pet(name)
+        if pet:
+            self.pets.remove(pet)
+            return True
+        return False
 
     def get_pet(self, name: str) -> Optional[Pet]:
         """Find a pet by name."""

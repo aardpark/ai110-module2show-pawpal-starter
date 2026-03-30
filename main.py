@@ -17,8 +17,10 @@ luna.add_task(Task("Breakfast", "08:00", 10, "medium", "daily"))
 luna.add_task(Task("Play time", "15:00", 20, "low"))
 luna.add_task(Task("Vet appointment", "09:00", 60, "high"))
 
-# Add a conflict: Luna already has something at 09:00
-luna.add_task(Task("Grooming", "09:00", 30, "medium"))
+# Attempt a conflict: Luna already has something at 09:00
+conflict = luna.add_task(Task("Grooming", "09:00", 30, "medium"))
+if conflict:
+    print(f"⚠ Blocked: {conflict}")
 
 scheduler = Scheduler(owner)
 
