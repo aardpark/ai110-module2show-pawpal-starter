@@ -31,10 +31,17 @@ tasks - assigned responsibilities regarding task information, priority, frequenc
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
 
+
+So for constraints the primary constraint had to be time. we organize by chronological order, earliest first. 
+priority stored on every task but we defer to time for sorting currently. I decided on time as the primary constraint because when you're looking at a schedule, it only makes sense to organize chronologically first, but I also added an option to sort by priority as well. 
+
+
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
+
+The scheduler had to choose between priority first or time first. we ended up being able to do both, but the primary view is time based. I think it's reasonable because for information, time is more immediately useful for a scheduling app.
 
 ---
 

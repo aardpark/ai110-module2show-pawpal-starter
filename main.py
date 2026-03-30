@@ -43,6 +43,12 @@ print("-- Mochi's tasks only --")
 for task in scheduler.filter_tasks(pet_name="Mochi"):
     print(f"  {task.time}  {task.description}")
 
+# --- Sort by Priority ---
+print()
+print("-- All tasks sorted by priority --")
+for task in scheduler.sort_by_priority():
+    print(f"  [{task.priority.upper():>6}]  {task.time}  {task.pet_name:>5} - {task.description}")
+
 # --- Recurring Task Demo ---
 print()
 print("-- Completing Mochi's morning walk (daily) --")

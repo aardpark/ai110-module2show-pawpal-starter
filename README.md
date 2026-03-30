@@ -22,6 +22,16 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Smarter Scheduling
+
+PawPal+ goes beyond basic task lists with built-in scheduling intelligence:
+
+- **Sort by time** — daily schedule ordered chronologically (earliest first)
+- **Sort by priority** — alternate view: high → medium → low, with time as tiebreaker
+- **Filter tasks** — narrow by pet name and/or completion status
+- **Conflict detection** — warns when two tasks for the same pet overlap at the same time
+- **Recurring tasks** — completing a daily or weekly task auto-generates the next occurrence
+
 ## Getting started
 
 ### Setup

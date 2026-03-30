@@ -30,6 +30,7 @@ classDiagram
     class Scheduler {
         +Owner owner
         +sort_by_time(tasks) list~Task~
+        +sort_by_priority(tasks) list~Task~
         +filter_tasks(pet_name, completed) list~Task~
         +detect_conflicts() list~str~
         +mark_task_complete(task: Task) Task

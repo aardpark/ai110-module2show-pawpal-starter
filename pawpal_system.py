@@ -70,6 +70,13 @@ class Scheduler:
             tasks = self.owner.get_all_tasks()
         return sorted(tasks, key=lambda t: t.time)
 
+    def sort_by_priority(self, tasks: list = None) -> list:
+        """Sort tasks by priority (high first), then by time."""
+        if tasks is None:
+            tasks = self.owner.get_all_tasks()
+        rank = {"high": 0, "medium": 1, "low": 2}
+        return sorted(tasks, key=lambda t: (rank.get(t.priority, 3), t.time))
+
     def filter_tasks(self, pet_name: str = None, completed: bool = None) -> list:
         """Filter tasks by pet name and/or completion status."""
         tasks = self.owner.get_all_tasks()
