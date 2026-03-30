@@ -25,12 +25,22 @@ class Pet:
     species: str
     tasks: list = field(default_factory=list)
 
+    def _times_overlap(self, time1: str, dur1: int, time2: str, dur2: int) -> bool:
+        """Check if two time windows overlap."""
+        h1, m1 = map(int, time1.split(":"))
+        h2, m2 = map(int, time2.split(":"))
+        start1 = h1 * 60 + m1
+        start2 = h2 * 60 + m2
+        return start1 < start2 + dur2 and start2 < start1 + dur1
+
     def add_task(self, task: Task) -> str | None:
         """Add a task to this pet's task list. Recurring tasks generate 6 months of occurrences."""
         for existing in self.tasks:
-            if existing.time == task.time and existing.date == task.date and not existing.completed:
-                return (f"Conflict: '{existing.description}' already scheduled "
-                        f"at {task.time} on {task.date}")
+            if (existing.date == task.date and not existing.completed
+                    and self._times_overlap(existing.time, existing.duration_minutes,
+                                            task.time, task.duration_minutes)):
+                return (f"Conflict: '{existing.description}' ({existing.time}, {existing.duration_minutes}min) "
+                        f"overlaps with '{task.description}' at {task.time} on {task.date}")
         task.pet_name = self.name
         self.tasks.append(task)
 

@@ -105,6 +105,24 @@ def test_conflict_blocks_addition():
     assert len(pet.get_tasks()) == 1
 
 
+def test_overlap_blocks_addition():
+    pet = Pet("Buddy", "dog")
+    assert pet.add_task(Task("Walk", "09:00", 30, "high")) is None
+    # 09:15 falls within 09:00-09:30
+    conflict = pet.add_task(Task("Vet", "09:15", 60, "high"))
+    assert conflict is not None
+    assert "Walk" in conflict
+    assert len(pet.get_tasks()) == 1
+
+
+def test_no_overlap_adjacent_tasks():
+    pet = Pet("Buddy", "dog")
+    # 09:00-09:30 and 09:30-10:30 — adjacent, not overlapping
+    assert pet.add_task(Task("Walk", "09:00", 30, "high")) is None
+    assert pet.add_task(Task("Vet", "09:30", 60, "high")) is None
+    assert len(pet.get_tasks()) == 2
+
+
 def test_no_conflict_different_times():
     owner = Owner("Test")
     pet = Pet("Buddy", "dog")
