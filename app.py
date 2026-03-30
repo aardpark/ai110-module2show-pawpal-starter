@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import date
+from datetime import date, timedelta
 from pawpal_system import Task, Pet, Owner, Scheduler
 
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
@@ -72,6 +72,7 @@ if owner.pets:
         task_desc = st.text_input("Task description", value="Morning walk")
         task_time = st.text_input("Time (HH:MM)", value="08:00")
     with col2:
+        task_date = st.date_input("Date", value=date.today())
         task_duration = st.number_input("Duration (minutes)", min_value=1, max_value=240, value=20)
         task_priority = st.selectbox("Priority", ["low", "medium", "high"], index=2)
         task_frequency = st.selectbox("Frequency", ["once", "daily", "weekly"])
@@ -85,6 +86,7 @@ if owner.pets:
                 duration_minutes=int(task_duration),
                 priority=task_priority,
                 frequency=task_frequency,
+                date=task_date,
             ))
             if conflict:
                 st.error(conflict)
@@ -93,25 +95,58 @@ if owner.pets:
 
 # --- Daily Schedule ---
 st.divider()
-st.subheader(f"Today's Schedule for {owner.name}")
+
+if "view_date" not in st.session_state:
+    st.session_state.view_date = date.today()
+
+col_prev, col_date, col_next, col_today = st.columns([1, 3, 1, 1])
+with col_prev:
+    if st.button("←"):
+        st.session_state.view_date -= timedelta(days=1)
+        st.rerun()
+with col_date:
+    st.subheader(st.session_state.view_date.strftime("%A, %b %d"))
+with col_next:
+    if st.button("→"):
+        st.session_state.view_date += timedelta(days=1)
+        st.rerun()
+with col_today:
+    if st.session_state.view_date != date.today():
+        if st.button("Today"):
+            st.session_state.view_date = date.today()
+            st.rerun()
+
+sort_by = st.toggle("Sort by priority", value=False)
 
 if st.button("Generate schedule") or owner.get_all_tasks():
-    schedule = scheduler.get_daily_schedule()
+    schedule = scheduler.get_daily_schedule(st.session_state.view_date)
+    if sort_by:
+        schedule = scheduler.sort_by_priority(schedule)
 
     if schedule:
-        rows = []
-        for t in schedule:
-            rows.append({
-                "Time": t.time,
-                "Pet": t.pet_name,
-                "Task": t.description,
-                "Duration": f"{t.duration_minutes}min",
-                "Priority": t.priority.upper(),
-                "Freq": t.frequency,
-            })
-        st.table(rows)
+        for i, t in enumerate(schedule):
+            col_info, col_done, col_cancel = st.columns([5, 1, 1])
+            with col_info:
+                st.write(f"**{t.time}** | {t.pet_name} | {t.description} | {t.duration_minutes}min | {t.priority.upper()} | {t.frequency}")
+            with col_done:
+                if st.button("Done", key=f"complete_{i}_{t.description}"):
+                    scheduler.mark_task_complete(t)
+                    st.rerun()
+            with col_cancel:
+                if st.button("Cancel", key=f"cancel_{i}_{t.description}"):
+                    pet = owner.get_pet(t.pet_name)
+                    if pet:
+                        pet.remove_task(t)
+                    st.rerun()
     else:
         st.info("No tasks scheduled for today.")
+
+    # Show completed tasks
+    completed = scheduler.filter_tasks(completed=True)
+    if completed:
+        with st.expander("Completed tasks"):
+            for t in completed:
+                st.write(f"~~{t.time} | {t.pet_name} | {t.description}~~")
 
     # Conflict warnings
     conflicts = scheduler.detect_conflicts()

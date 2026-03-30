@@ -15,7 +15,7 @@ classDiagram
         +str name
         +str species
         +list~Task~ tasks
-        +add_task(task: Task)
+        +add_task(task: Task) str | None
         +get_tasks() list~Task~
     }
 
@@ -23,6 +23,7 @@ classDiagram
         +str name
         +list~Pet~ pets
         +add_pet(pet: Pet)
+        +remove_pet(name: str) bool
         +get_pet(name: str) Pet
         +get_all_tasks() list~Task~
     }

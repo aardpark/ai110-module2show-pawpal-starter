@@ -46,7 +46,40 @@ def test_sort_by_priority():
     assert priorities == ["high", "medium", "low"]
 
 
-def test_recurrence_daily():
+def test_daily_generates_6_months():
+    pet = Pet("Buddy", "dog")
+    today = date.today()
+    pet.add_task(Task("Walk", "08:00", 20, "high", frequency="daily", date=today))
+
+    end_date = today + timedelta(days=180)
+    expected_count = (end_date - today).days + 1  # today + 180 days
+    assert len(pet.get_tasks()) == expected_count
+
+    # First task is today, last is ~6 months out
+    dates = sorted(t.date for t in pet.get_tasks())
+    assert dates[0] == today
+    assert dates[-1] == end_date
+
+
+def test_weekly_generates_6_months():
+    pet = Pet("Buddy", "dog")
+    today = date.today()
+    pet.add_task(Task("Grooming", "10:00", 60, "medium", frequency="weekly", date=today))
+
+    tasks = pet.get_tasks()
+    assert len(tasks) > 25  # at least 26 weeks
+    dates = sorted(t.date for t in tasks)
+    assert dates[0] == today
+    assert dates[1] == today + timedelta(weeks=1)
+
+
+def test_once_does_not_generate_extra():
+    pet = Pet("Buddy", "dog")
+    pet.add_task(Task("Vet visit", "14:00", 60, "high", frequency="once"))
+    assert len(pet.get_tasks()) == 1
+
+
+def test_complete_daily_next_day_exists():
     owner = Owner("Test")
     pet = Pet("Buddy", "dog")
     owner.add_pet(pet)
@@ -54,41 +87,13 @@ def test_recurrence_daily():
     pet.add_task(Task("Walk", "08:00", 20, "high", frequency="daily", date=today))
 
     scheduler = Scheduler(owner)
-    original = pet.get_tasks()[0]
-    new_task = scheduler.mark_task_complete(original)
+    today_task = [t for t in pet.get_tasks() if t.date == today][0]
+    scheduler.mark_task_complete(today_task)
 
-    assert original.completed is True
-    assert new_task is not None
-    assert new_task.date == today + timedelta(days=1)
-    assert new_task.completed is False
-    assert len(pet.get_tasks()) == 2
-
-
-def test_recurrence_weekly():
-    owner = Owner("Test")
-    pet = Pet("Buddy", "dog")
-    owner.add_pet(pet)
-    today = date.today()
-    pet.add_task(Task("Grooming", "10:00", 60, "medium", frequency="weekly", date=today))
-
-    scheduler = Scheduler(owner)
-    original = pet.get_tasks()[0]
-    new_task = scheduler.mark_task_complete(original)
-
-    assert new_task.date == today + timedelta(weeks=1)
-
-
-def test_no_recurrence_for_once():
-    owner = Owner("Test")
-    pet = Pet("Buddy", "dog")
-    owner.add_pet(pet)
-    pet.add_task(Task("Vet visit", "14:00", 60, "high", frequency="once"))
-
-    scheduler = Scheduler(owner)
-    result = scheduler.mark_task_complete(pet.get_tasks()[0])
-
-    assert result is None
-    assert len(pet.get_tasks()) == 1
+    assert today_task.completed is True
+    tomorrow_tasks = [t for t in pet.get_tasks() if t.date == today + timedelta(days=1)]
+    assert len(tomorrow_tasks) == 1
+    assert tomorrow_tasks[0].completed is False
 
 
 def test_conflict_blocks_addition():

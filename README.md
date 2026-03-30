@@ -31,6 +31,10 @@ PawPal+ goes beyond basic task lists with built-in scheduling intelligence:
 - **Filter tasks** — narrow by pet name and/or completion status
 - **Conflict detection** — warns when two tasks for the same pet overlap at the same time
 - **Recurring tasks** — completing a daily or weekly task auto-generates the next occurrence
+- **Calendar navigation** — browse day-by-day with arrow controls and a Today button
+- **Task completion** — mark tasks done from the schedule; completed tasks shown separately with strikethrough
+- **Task cancellation** — remove tasks directly from the schedule
+- **Conflict prevention** — blocks adding a task if the time slot is already taken for that pet
 
 ## Testing PawPal+
 
@@ -50,6 +54,10 @@ We wrote **13 tests** covering core system behavior:
 - **Edge cases** — empty pet (no tasks), completed tasks excluded from daily schedule
 
 **Confidence Level:** 4 / 5
+
+## Demo
+
+![PawPal+ App](demo_screenshot.png)
 
 ## Getting started
 

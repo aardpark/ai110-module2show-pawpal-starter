@@ -26,14 +26,43 @@ class Pet:
     tasks: list = field(default_factory=list)
 
     def add_task(self, task: Task) -> str | None:
-        """Add a task to this pet's task list. Returns conflict message if time is taken."""
+        """Add a task to this pet's task list. Recurring tasks generate 6 months of occurrences."""
         for existing in self.tasks:
             if existing.time == task.time and existing.date == task.date and not existing.completed:
                 return (f"Conflict: '{existing.description}' already scheduled "
                         f"at {task.time} on {task.date}")
         task.pet_name = self.name
         self.tasks.append(task)
+
+        # Pre-generate recurring occurrences for 6 months
+        if task.frequency == "daily":
+            delta = timedelta(days=1)
+        elif task.frequency == "weekly":
+            delta = timedelta(weeks=1)
+        else:
+            return None
+
+        current_date = task.date + delta
+        end_date = task.date + timedelta(days=180)
+        while current_date <= end_date:
+            occurrence = Task(
+                description=task.description,
+                time=task.time,
+                duration_minutes=task.duration_minutes,
+                priority=task.priority,
+                frequency=task.frequency,
+                pet_name=self.name,
+                date=current_date,
+            )
+            self.tasks.append(occurrence)
+            current_date += delta
+
         return None
+
+    def remove_task(self, task: Task):
+        """Remove a task from this pet's task list."""
+        if task in self.tasks:
+            self.tasks.remove(task)
 
     def get_tasks(self) -> list:
         """Return all tasks for this pet."""
@@ -116,29 +145,8 @@ class Scheduler:
         return warnings
 
     def mark_task_complete(self, task: Task):
-        """Mark a task complete; if recurring, create next occurrence."""
+        """Mark a task complete."""
         task.mark_complete()
-        if task.frequency == "daily":
-            next_date = task.date + timedelta(days=1)
-        elif task.frequency == "weekly":
-            next_date = task.date + timedelta(weeks=1)
-        else:
-            return None
-
-        new_task = Task(
-            description=task.description,
-            time=task.time,
-            duration_minutes=task.duration_minutes,
-            priority=task.priority,
-            frequency=task.frequency,
-            pet_name=task.pet_name,
-            date=next_date,
-        )
-        # Add to the correct pet
-        pet = self.owner.get_pet(task.pet_name)
-        if pet:
-            pet.add_task(new_task)
-        return new_task
 
     def get_daily_schedule(self, target_date: date = None) -> list:
         """Get all tasks for a given date, sorted by time."""

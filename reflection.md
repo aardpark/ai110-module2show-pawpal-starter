@@ -22,6 +22,8 @@ tasks - assigned responsibilities regarding task information, priority, frequenc
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
+Yes, we needed to change implementation of how add task was added when it came to conflicts. before it would throw an error but still get added to the schedule - obviously not intended behavior. We changed it so that if there was a time conflict, it would block the added task completely while throwing an error.
+
 ---
 
 ## 2. Scheduling Logic and Tradeoffs
@@ -79,10 +81,16 @@ I evaluated it by asking my AI to provide code diffs, and following chains of lo
 - What behaviors did you test?
 - Why were these tests important?
 
+Every time we added new functionality, we would add a new test to check its intended function. Most of the tests simply checked to make sure that adding or removing or editing values worked properly. Some checked for behavior when given incorrect inputs. These tests were important because they let me know what's going on with the behavior of the code before I have to test it thoroughly by launching the app. it saves time and effort before I jump into human testing.
+
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
 - What edge cases would you test next if you had more time?
+
+4/5. I'd be more confident if I had more people beta testing and giving feedback. 
+
+As far as edge cases, I think if I had more time I would really test adding and removing logic for tasks and pets. Since pets are a lifelong commitment, you'd want an app that can handle many many operations over the course of operation without breaking due to unexpected behavior.
 
 ---
 
@@ -92,10 +100,16 @@ I evaluated it by asking my AI to provide code diffs, and following chains of lo
 
 - What part of this project are you most satisfied with?
 
+very satisfied with the AI's ability to package requirements concisely. It removes all of the friction of the non-engineering aspects.
+
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
 
+If I had to do it again, I would start by thinking of what the ui should look like, then think about how the back end could fit that need. That would be a UX first approach, which I think would have been less work.
+
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+
+Even if the plan going in is good, you will need to remain flexible when it comes to individual implementations of features. AI can't really comprehend front end and back end together, often creating good backend systems while forgetting to wire it up properly with the front end. 
